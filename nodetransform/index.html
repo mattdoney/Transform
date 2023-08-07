@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Upload a CSV file</h1>
+
+<input type="file" id="file" name="file">
+<button onclick="submitForm()">Transform</button>
+
+<script>
+function submitForm() {
+  const fileInput = document.getElementById('file');
+  if (fileInput.files.length > 0) {
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    fetch('/upload', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'transformed_data.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+  } else {
+    alert('Please select a file.');
+  }
+}
+</script>
+
+</body>
+</html>
