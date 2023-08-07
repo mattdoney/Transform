@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Transformer</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100" style="background-color: #cccfff;">
+    <div class="card">
+        <div class="card-body">
+            <h2>Salary Sacrifice Ratebook Transform</h2>
+            <h5 class="card-title">Upload a CSV file</h5>
+            <input type="file" class="form-control-file mb-3" id="file" name="file">
+            
+            <h5 class="card-title">Lease Uplift Values</h5>
+            <div class="form-group">
+              <label for="uplift24">24 months</label>
+              <input type="number" class="form-control" id="uplift24" value="104.17">
+            </div>
+            <div class="form-group">
+              <label for="uplift36">36 months</label>
+              <input type="number" class="form-control" id="uplift36" value="69.44">
+            </div>
+            <div class="form-group">
+              <label for="uplift48">48 months</label>
+              <input type="number" class="form-control" id="uplift48" value="52.09">
+            </div>
+            <div class="form-group">
+              <label for="uplift60">60 months</label>
+              <input type="number" class="form-control" id="uplift60" value="41.66">
+            </div>
+            <div class="form-group">
+                <label for="co2threshold">CO2 Threshold (g/km)</label>
+                <input type="number" class="form-control" id="co2threshold" value="80">
+              </div>
+
+            <button class="btn btn-primary" onclick="submitForm()">Transform</button>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function submitForm() {
+        const fileInput = document.getElementById('file');
+        if (fileInput.files.length > 0) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('uplift24', document.getElementById('uplift24').value);
+            formData.append('uplift36', document.getElementById('uplift36').value);
+            formData.append('uplift48', document.getElementById('uplift48').value);
+            formData.append('uplift60', document.getElementById('uplift60').value);
+            formData.append('co2threshold', document.getElementById('co2threshold').value);
+
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'transformed_data.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
+        } else {
+            alert('Please select a file.');
+        }
+    }
+    </script>
+</body>
+</html>
